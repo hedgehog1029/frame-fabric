@@ -1,4 +1,5 @@
 plugins {
+    id 'java-library'
     id 'fabric-loom' version '0.6-SNAPSHOT'
     id 'maven-publish'
 }
@@ -26,8 +27,8 @@ dependencies {
     modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
     modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
 
-    modImplementation "io.github.hedgehog1029:frame:1.4.1"
-    modImplementation "org.generalprogramming.fabulous:fabulous:1.0.0"
+    modApi "io.github.hedgehog1029:frame:1.4.1"
+    modApi "org.generalprogramming.fabulous:fabulous:1.0.0"
 }
 
 processResources {
