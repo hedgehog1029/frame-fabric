@@ -1,5 +1,7 @@
 package io.github.hedgehog1029.frame.fabric;
 
+import com.google.common.base.Splitter;
+import com.google.common.collect.Lists;
 import com.mojang.brigadier.builder.ArgumentBuilder;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
@@ -20,6 +22,7 @@ import org.generalprogramming.fabulous.spi.PermissionsAPI;
 
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
@@ -102,12 +105,9 @@ public class FabricCommand {
 		namespace.set("server", source.getMinecraftServer());
 		namespace.set("source", source);
 
-		pipeline.getCompletions(
-				Arrays.stream(builder.getInput().split(" "))
-						.skip(1)
-						.collect(Collectors.toList()),
-				namespace
-		).forEach(builder::suggest);
+		Iterator<String> parts = Splitter.on(' ').split(builder.getInput()).iterator();
+		parts.next(); // skip an argument
+		pipeline.getCompletions(Lists.newArrayList(parts), namespace).forEach(builder::suggest);
 
 		return builder.buildFuture();
 	}
