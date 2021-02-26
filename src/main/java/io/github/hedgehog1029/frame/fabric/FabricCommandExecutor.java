@@ -53,7 +53,9 @@ public class FabricCommandExecutor implements Command<ServerCommandSource> {
 
 			source.sendError(new LiteralText(message).formatted(Formatting.RED));
 
-			e.printStackTrace();
+			if (e.getMessage() == null) {
+				e.printStackTrace();
+			}
 			return -1;
 		}
 	}
