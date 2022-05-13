@@ -20,10 +20,7 @@ import net.minecraft.util.Formatting;
 import org.generalprogramming.fabulous.Fabulous;
 import org.generalprogramming.fabulous.spi.PermissionsAPI;
 
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
@@ -87,12 +84,14 @@ public class FabricCommand {
 			return true;
 		}
 
-		PermissionsAPI api = Fabulous.getFabulous().getPermissionsAPI();
 		try {
+			PermissionsAPI api = Fabulous.getFabulous().getPermissionsAPI();
 			ServerPlayerEntity player = source.getPlayer();
 
 			return api.hasPermission(player.getUuid(), pipeline.getPermission());
 		} catch (CommandSyntaxException ignored) {
+		} catch (NoSuchElementException noApi) {
+			return false;
 		}
 
 		return false;
