@@ -28,7 +28,7 @@ public class FabricCommandExecutor implements Command<ServerCommandSource> {
 		ServerCommandSource source = context.getSource();
 		Namespace namespace = new Namespace();
 
-		namespace.set("server", source.getMinecraftServer());
+		namespace.set("server", source.getServer());
 		namespace.set("sender", source.getEntity());
 		namespace.set("source", context.getSource());
 

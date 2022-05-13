@@ -49,7 +49,7 @@ public class FabricCommand {
 		plans.forEach(plan -> {
 			List<RequiredArgumentBuilder<ServerCommandSource, String>> mappedArgs = plan.getParameterNames().stream()
 					.map(name -> argument(name, string()).suggests(this::suggest))
-					.collect(Collectors.toList());
+					.toList();
 
 			ArgumentBuilder<ServerCommandSource, ?> last = mappedArgs.get(mappedArgs.size() - 1);
 			if (last == null) last = builder;
@@ -102,7 +102,7 @@ public class FabricCommand {
 		ServerCommandSource source = ctx.getSource();
 		Namespace namespace = new Namespace();
 
-		namespace.set("server", source.getMinecraftServer());
+		namespace.set("server", source.getServer());
 		namespace.set("source", source);
 
 		Iterator<String> parts = Splitter.on(' ').split(builder.getInput()).iterator();
