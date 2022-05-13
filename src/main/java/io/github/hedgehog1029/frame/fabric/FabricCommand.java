@@ -48,8 +48,13 @@ public class FabricCommand {
 					.map(name -> argument(name, string()).suggests(this::suggest))
 					.toList();
 
-			ArgumentBuilder<ServerCommandSource, ?> last = mappedArgs.get(mappedArgs.size() - 1);
-			if (last == null) last = builder;
+			int lastIndex = mappedArgs.size() - 1;
+			ArgumentBuilder<ServerCommandSource, ?> last;
+			if (lastIndex >= 0) {
+				last = mappedArgs.get(lastIndex);
+			} else {
+				last = builder;
+			}
 
 			last.requires(this::checkPermission);
 			last.executes(new FabricCommandExecutor(pipeline, plan.getParameterNames()));

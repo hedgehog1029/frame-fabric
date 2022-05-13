@@ -34,6 +34,8 @@ dependencies {
 
     modApi "io.github.hedgehog1029:frame:1.4.3"
     modApi "org.generalprogramming.fabulous:fabulous:1.0.0"
+
+    include "io.github.hedgehog1029:frame:1.4.3"
 }
 
 processResources {
