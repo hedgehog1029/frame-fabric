@@ -2,6 +2,7 @@ package io.github.hedgehog1029.frame.fabric;
 
 import io.github.hedgehog1029.frame.Frame;
 import io.github.hedgehog1029.frame.fabric.api.FrameInitializer;
+import io.github.hedgehog1029.frame.fabric.bindings.FabricBindingProvider;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v1.CommandRegistrationCallback;
 import net.fabricmc.loader.api.FabricLoader;
@@ -26,6 +27,9 @@ public class FrameFabricPlugin implements ModInitializer {
 					.setCommandFactory(new FabricCommandFactory())
 					.setHookCallback(new FabricHookCallback())
 					.build();
+
+			frame.addInjector(new ServerLifecycleEventsInjector());
+			frame.loadBindings(new FabricBindingProvider());
 
 			frameInstances.add(frame);
 
