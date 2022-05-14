@@ -4,14 +4,15 @@ import com.google.common.base.Splitter;
 import com.google.common.collect.Lists;
 import com.mojang.brigadier.builder.ArgumentBuilder;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
-import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import com.mojang.brigadier.tree.LiteralCommandNode;
+import io.github.hedgehog1029.frame.dispatcher.pipeline.ArgumentNode;
 import io.github.hedgehog1029.frame.dispatcher.pipeline.ExecutionPlan;
 import io.github.hedgehog1029.frame.dispatcher.pipeline.IPipeline;
+import io.github.hedgehog1029.frame.fabric.api.CustomArgumentNode;
 import io.github.hedgehog1029.frame.util.Namespace;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -25,6 +26,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
+import static com.mojang.brigadier.arguments.StringArgumentType.greedyString;
 import static com.mojang.brigadier.arguments.StringArgumentType.string;
 import static net.minecraft.server.command.CommandManager.argument;
 import static net.minecraft.server.command.CommandManager.literal;
@@ -44,8 +46,18 @@ public class FabricCommand {
 		LiteralArgumentBuilder<ServerCommandSource> builder = literal(pipeline.getPrimaryAlias());
 
 		plans.forEach(plan -> {
-			List<RequiredArgumentBuilder<ServerCommandSource, String>> mappedArgs = plan.getParameterNames().stream()
-					.map(name -> argument(name, string()).suggests(this::suggest))
+			var mappedArgs = plan.getArguments().stream()
+					.map(node -> {
+						if (node instanceof ArgumentNode.Literal ln) {
+							return literal(ln.getLiteral());
+						} else if (node instanceof ArgumentNode.GreedyString) {
+							return argument(node.getName(), greedyString()).suggests(this::suggest);
+						} else if (node instanceof CustomArgumentNode cn) {
+							return argument(node.getName(), cn.getArgumentType()).suggests(this::suggest);
+						} else {
+							return argument(node.getName(), string()).suggests(this::suggest);
+						}
+					})
 					.toList();
 
 			int lastIndex = mappedArgs.size() - 1;
@@ -57,7 +69,7 @@ public class FabricCommand {
 			}
 
 			last.requires(this::checkPermission);
-			last.executes(new FabricCommandExecutor(pipeline, plan.getParameterNames()));
+			last.executes(new FabricCommandExecutor(pipeline, plan.getArguments()));
 
 			if (!mappedArgs.isEmpty()) {
 				builder.then(Util.reduceRight(mappedArgs.stream(), ArgumentBuilder::then));
