@@ -4,7 +4,7 @@ import io.github.hedgehog1029.frame.Frame;
 import io.github.hedgehog1029.frame.fabric.api.FrameInitializer;
 import io.github.hedgehog1029.frame.fabric.bindings.FabricBindingProvider;
 import net.fabricmc.api.ModInitializer;
-import net.fabricmc.fabric.api.command.v1.CommandRegistrationCallback;
+import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.entrypoint.EntrypointContainer;
 
@@ -36,9 +36,9 @@ public class FrameFabricPlugin implements ModInitializer {
 			container.getEntrypoint().initFrame(frame);
 		});
 
-		CommandRegistrationCallback.EVENT.register((dispatcher, dedicated) -> frameInstances.forEach(frame -> {
+		CommandRegistrationCallback.EVENT.register((dispatcher, registry, environment) -> frameInstances.forEach(frame -> {
 			if (frame.getCommandFactory() instanceof FabricCommandFactory) {
-				((FabricCommandFactory) frame.getCommandFactory()).setDispatcher(dispatcher);
+				((FabricCommandFactory) frame.getCommandFactory()).setDispatcher(dispatcher, registry);
 			}
 
 			frame.go();

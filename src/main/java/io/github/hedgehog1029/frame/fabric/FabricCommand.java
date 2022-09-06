@@ -5,7 +5,6 @@ import com.google.common.collect.Lists;
 import com.mojang.brigadier.builder.ArgumentBuilder;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
-import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import com.mojang.brigadier.tree.LiteralCommandNode;
@@ -14,9 +13,10 @@ import io.github.hedgehog1029.frame.dispatcher.pipeline.ExecutionPlan;
 import io.github.hedgehog1029.frame.dispatcher.pipeline.IPipeline;
 import io.github.hedgehog1029.frame.fabric.api.CustomArgumentNode;
 import io.github.hedgehog1029.frame.util.Namespace;
+import net.minecraft.command.CommandRegistryAccess;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.text.LiteralText;
+import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import org.generalprogramming.fabulous.Fabulous;
 import org.generalprogramming.fabulous.spi.PermissionsAPI;
@@ -42,7 +42,7 @@ public class FabricCommand {
 				.collect(Collectors.toList());
 	}
 
-	public LiteralArgumentBuilder<ServerCommandSource> buildNode() {
+	public LiteralArgumentBuilder<ServerCommandSource> buildNode(CommandRegistryAccess registry) {
 		LiteralArgumentBuilder<ServerCommandSource> builder = literal(pipeline.getPrimaryAlias());
 
 		plans.forEach(plan -> {
@@ -53,7 +53,7 @@ public class FabricCommand {
 						} else if (node instanceof ArgumentNode.GreedyString) {
 							return argument(node.getName(), greedyString()).suggests(this::suggest);
 						} else if (node instanceof CustomArgumentNode cn) {
-							return argument(node.getName(), cn.getArgumentType()).suggests(this::suggest);
+							return argument(node.getName(), cn.getArgumentType(registry)).suggests(this::suggest);
 						} else {
 							return argument(node.getName(), string()).suggests(this::suggest);
 						}
@@ -91,7 +91,7 @@ public class FabricCommand {
 
 	private int defaultExecutor(CommandContext<ServerCommandSource> context) {
 		String message = String.format("Usage: /%s %s", pipeline.getPrimaryAlias(), pipeline.getUsage());
-		context.getSource().sendError(new LiteralText(message).formatted(Formatting.RED));
+		context.getSource().sendError(Text.literal(message).formatted(Formatting.RED));
 
 		return -1;
 	}
@@ -106,12 +106,9 @@ public class FabricCommand {
 			ServerPlayerEntity player = source.getPlayer();
 
 			return api.hasPermission(player.getUuid(), pipeline.getPermission());
-		} catch (CommandSyntaxException ignored) {
 		} catch (NoSuchElementException noApi) {
 			return false;
 		}
-
-		return false;
 	}
 
 	private CompletableFuture<Suggestions> suggest(CommandContext<ServerCommandSource> ctx, SuggestionsBuilder builder) {

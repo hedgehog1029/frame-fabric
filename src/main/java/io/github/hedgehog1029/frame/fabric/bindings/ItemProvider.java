@@ -9,6 +9,7 @@ import io.github.hedgehog1029.frame.dispatcher.provider.Provider;
 import io.github.hedgehog1029.frame.fabric.api.CustomArgumentNode;
 import io.github.hedgehog1029.frame.module.wrappers.ParameterWrapper;
 import io.github.hedgehog1029.frame.util.Namespace;
+import net.minecraft.command.CommandRegistryAccess;
 import net.minecraft.command.argument.ItemStackArgumentType;
 import net.minecraft.item.Item;
 import net.minecraft.util.Identifier;
@@ -46,8 +47,8 @@ public class ItemProvider implements Provider<Item> {
 		}
 
 		@Override
-		public ArgumentType<?> getArgumentType() {
-			return ItemStackArgumentType.itemStack();
+		public ArgumentType<?> getArgumentType(CommandRegistryAccess registry) {
+			return ItemStackArgumentType.itemStack(registry);
 		}
 
 		@Override

@@ -10,7 +10,7 @@ import io.github.hedgehog1029.frame.dispatcher.pipeline.IPipeline;
 import io.github.hedgehog1029.frame.fabric.api.CustomArgumentNode;
 import io.github.hedgehog1029.frame.util.Namespace;
 import net.minecraft.server.command.ServerCommandSource;
-import net.minecraft.text.LiteralText;
+import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 
 import java.util.ArrayDeque;
@@ -52,14 +52,14 @@ public class FabricCommandExecutor implements Command<ServerCommandSource> {
 			return 1;
 		} catch (UsageException e) {
 			String message = String.format("Usage: /%s %s", pipeline.getPrimaryAlias(), pipeline.getUsage());
-			source.sendError(new LiteralText(message).formatted(Formatting.RED));
+			source.sendError(Text.literal(message).formatted(Formatting.RED));
 
 			return -1;
 		} catch (DispatcherException e) {
 			String message = e.getMessage();
 			if (message == null) message = "An unknown error occurred!";
 
-			source.sendError(new LiteralText(message).formatted(Formatting.RED));
+			source.sendError(Text.literal(message).formatted(Formatting.RED));
 
 			if (e.getMessage() == null) {
 				e.printStackTrace();
