@@ -9,7 +9,7 @@
 In your Fabric mod's build.gradle:
 
 ```groovy
-modImplementation "ch.offbeatwit.frame:frame-fabric:1.0.4+1.18.2"
+modImplementation "ch.offbeatwit.frame:frame-fabric:1.0.4+1.19.2"
 ```
 
 In your fabric.mod.json:
